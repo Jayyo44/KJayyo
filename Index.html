@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PBL Adventure: Detective Max & the Magic Pets (Have/Has)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Kanit & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Kanit', 'Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            300: '#7dd3fc',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        },
+                        accent: {
+                            warm: '#f59e0b',
+                            coral: '#f43f5e',
+                            emerald: '#10b981',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom animations & fine-tuning */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(224, 242, 254, 0.5);
+        }
+        .bouncy-hover {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .bouncy-hover:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px -10px rgba(14, 165, 233, 0.2);
+        }
+        
+        /* Shaking animation for incorrect answers */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .animate-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Success Pulse for unlocked cages */
+        @keyframes pulse-unlock {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); }
+            100% { transform: scale(1); }
+        }
+        .unlocked-pulse {
+            animation: pulse-unlock 0.6s ease-out;
+        }
+
+        /* Slide up bars animation */
+        @keyframes slide-bars {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-110%); opacity: 0; }
+        }
+        .cage-bars-open {
+            animation: slide-bars 1.2s forwards cubic-bezier(0.55, 0.055, 0.675, 0.19);
+        }
+
+        /* Scrollbar styling for kids */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Certificate watermark & style */
+        .cert-border {
+            border: 12px double #d97706;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-certificate, #printable-certificate * {
+                visibility: visible;
+            }
+            #printable-certificate {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-brand-50 to-indigo-100 min-h-screen font-sans text-slate-800 flex flex-col">
+
+    <!-- Header/Navigation -->
+    <header class="sticky top-0 z-50 bg-white/95 shadow-md border-b border-brand-100 backdrop-blur">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo & Mascot -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                    <div class="bg-brand-500 text-white p-2.5 rounded-2xl shadow-lg shadow-brand-500/30 flex items-center justify-center transform hover:rotate-12 transition-transform">
+                        <i class="fa-solid fa-paw text-2xl animate-pulse"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-brand-600 to-indigo-600 bg-clip-text text-transparent">
+                            Detective Max & Magic Pets
+                        </span>
+                        <div class="text-xs text-brand-700 tracking-wider font-semibold">PBL Learning Unit: Have vs Has (P.4)</div>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Buttons -->
+                <nav class="hidden lg:flex space-x-1 bg-slate-100 p-1.5 rounded-2xl">
+                    <button onclick="switchTab('home')" id="tab-btn-home" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-brand-700 bg-white shadow-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-map-location-dot"></i> <span>1. แนะนำภารกิจ</span>
+                    </button>
+                    <button onclick="switchTab('resources')" id="tab-btn-resources" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-brand-600 flex items-center space-x-2">
+                        <i class="fa-solid fa-book-open"></i> <span>2. คลังความรู้</span>
+                    </button>
+                    <button onclick="switchTab('discussion')" id="tab-btn-discussion" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-brand-600 flex items-center space-x-2">
+                        <i class="fa-solid fa-comments"></i> <span>3. แลกเปลี่ยนความคิด</span>
+                    </button>
+                    <button onclick="switchTab('mission')" id="tab-btn-mission" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-brand-600 flex items-center space-x-2">
+                        <i class="fa-solid fa-key"></i> <span>4. แก้ปมปริศนา</span>
+                    </button>
+                    <button onclick="switchTab('evaluation')" id="tab-btn-evaluation" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-brand-600 flex items-center space-x-2">
+                        <i class="fa-solid fa-award"></i> <span>5. เกณฑ์ & ประเมิน</span>
+                    </button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="lg:hidden">
+                    <button id="mobile-menu-toggle" onclick="toggleMobileMenu()" class="text-slate-600 hover:text-brand-600 focus:outline-none p-2 rounded-xl hover:bg-slate-100 transition-colors">
+                        <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden border-t border-slate-100 bg-white/95 px-4 pt-2 pb-4 space-y-1.5 shadow-inner">
+            <button onclick="switchTab('home')" class="mobile-tab-btn w-full text-left px-4 py-3 rounded-xl text-base font-semibold flex items-center space-x-3 bg-brand-50 text-brand-700">
+                <i class="fa-solid fa-map-location-dot"></i> <span>1. แนะนำภารกิจ</span>
+            </button>
+            <button onclick="switchTab('resources')" class="mobile-tab-btn w-full text-left px-4 py-3 rounded-xl text-base font-semibold flex items-center space-x-3 text-slate-600 hover:bg-slate-50">
+                <i class="fa-solid fa-book-open"></i> <span>2. คลังความรู้</span>
+            </button>
+            <button onclick="switchTab('discussion')" class="mobile-tab-btn w-full text-left px-4 py-3 rounded-xl text-base font-semibold flex items-center space-x-3 text-slate-600 hover:bg-slate-50">
+                <i class="fa-solid fa-comments"></i> <span>3. แลกเปลี่ยนความคิด</span>
+            </button>
+            <button onclick="switchTab('mission')" class="mobile-tab-btn w-full text-left px-4 py-3 rounded-xl text-base font-semibold flex items-center space-x-3 text-slate-600 hover:bg-slate-50">
+                <i class="fa-solid fa-key"></i> <span>4. แก้ปมปริศนา</span>
+            </button>
+            <button onclick="switchTab('evaluation')" class="mobile-tab-btn w-full text-left px-4 py-3 rounded-xl text-base font-semibold flex items-center space-x-3 text-slate-600 hover:bg-slate-50">
+                <i class="fa-solid fa-award"></i> <span>5. เกณฑ์ & ประเมิน</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Tab 1: Home (หน้าแรก) -->
+        <section id="content-home" class="tab-content block space-y-8 animate-fade-in">
+            <!-- Hero / Story Banner -->
+            <div class="relative overflow-hidden bg-gradient-to-r from-brand-600 to-indigo-700 text-white rounded-3xl p-8 sm:p-12 shadow-2xl shadow-indigo-500/20">
+                <div class="absolute -right-12 -bottom-12 text-white/10 text-[180px] pointer-events-none">
+                    <i class="fa-solid fa-paw"></i>
+                </div>
+                
+                <div class="max-w-3xl relative z-10 space-y-6">
+                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-white/20 text-white backdrop-blur-md uppercase tracking-wider">
+                        <span class="w-2 h-2 rounded-full bg-accent-warm mr-2 animate-pulse"></span>
+                        เรื่องเล่าปริศนาสำหรับสายลับรุ่นจิ๋ว ป.4
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                        วิกฤตการณ์ "เกาะสัตว์วิเศษ"! <br>เมื่อเครื่องควบคุมภาษาพังพินาศ
+                    </h1>
+                    <p class="text-base sm:text-lg text-brand-100 font-light leading-relaxed">
+                        ณ "เกาะสัตว์วิเศษแสนสุข" สัตว์น้อยใหญ่ผู้พูดได้ถูกล็อกไว้ในกรงกลด้วยระบบสแกนคำศัพท์! ตัวร้าย "Mr. S" ได้แอบเจาะระบบคอมพิวเตอร์และแก้ไขโค้ด "Have/Has Generator" จนประโยคพังไปหมด มีเพียง "สายลับ ป.4" ที่จะสามารถทำหน้าที่เป็นผู้เชี่ยวชาญภาษาอังกฤษ กู้คืนความถูกต้องของประโยคเพื่อช่วยสัตว์วิเศษได้!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Trigger Event Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Short Story Card -->
+                <div class="lg:col-span-2 bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3 text-accent-coral">
+                            <i class="fa-solid fa-triangle-exclamation text-2xl animate-bounce"></i>
+                            <h3 class="text-xl font-bold text-slate-800">สถานการณ์น่าตื่นเต้น (Trigger Event)</h3>
+                        </div>
+                        <p class="text-slate-600 leading-relaxed text-sm sm:text-base">
+                            นักสืบตัวน้อยเอ๋ย! เมื่อเช้านี้มีจดหมายด่วนพับเป็นรูปสัตว์วิเศษส่งตรงมาจาก <strong>ด็อกเตอร์แม็กซ์ (Detective Max)</strong> หัวหน้าสมาคมนักสืบพิทักษ์ภาษาอังกฤษ! <br><br>
+                            ในจดหมายระบุว่าเจ้าวายร้าย "Mr. S" แอบป่วนระบบคอมพิวเตอร์ ทำให้อุปกรณ์สั่นสัญญาณของเกาะสลับโครงสร้างไวยากรณ์ไปหมด สัตว์วิเศษไม่สามารถกินอาหารได้เพราะฝากล่องสแกนเสียงไม่ยอมเปิด ประโยคต่างๆ พังทลาย เช่น เขียนว่า <code class="bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-mono font-bold">"He have a red ball"</code> หรือ <code class="bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-mono font-bold">"They has small wings"</code> ระบบความปลอดภัยของเกาะวิเคราะห์ผิดพลาดและล็อกกรงทันที! สัตว์วิเศษน้อยๆ กำลังต้องการพลังจากยอดสืบสายลับป.4 ด่วนที่สุด!
+                        </p>
+                    </div>
+                    <div class="mt-6 p-4 bg-amber-50 rounded-2xl border border-amber-100 flex items-start space-x-3">
+                        <span class="text-2xl">💡</span>
+                        <div class="text-xs sm:text-sm text-amber-800">
+                            <strong>ความท้าทาย:</strong> ประตูกรงกลจะเปิดออกก็ต่อเมื่อระบบคำนวณได้รับโค้ดความจริงที่สมบูรณ์ตามตาราง Have/Has เท่านั้น!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mission Card -->
+                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-brand-500 flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-brand-500 text-white text-xs px-4 py-1.5 rounded-bl-2xl font-bold uppercase tracking-wider">
+                        เป้าหมายสำคัญ
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3 text-brand-600">
+                            <i class="fa-solid fa-bullseye text-2xl"></i>
+                            <h3 class="text-xl font-bold text-slate-800">ภารกิจของคุณ (Your Mission)</h3>
+                        </div>
+                        <ul class="space-y-3 text-slate-600 text-sm">
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-circle-check text-emerald-500 mt-1"></i>
+                                <span><strong>แยกแยะหลักการใช้</strong> have และ has ให้ถูกต้องแม่นยำตามประธานของประโยค</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-circle-check text-emerald-500 mt-1"></i>
+                                <span><strong>แก้ไขรหัสคำสั่งผิดไวยากรณ์</strong> เพื่อเปิดประตูกรงกลช่วยสัตว์วิเศษ 5 ตัว</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-circle-check text-emerald-500 mt-1"></i>
+                                <span><strong>บันทึกกลวิธีจำ</strong> และแบ่งปันเทคนิคให้เพื่อนๆ คนอื่นในทีมร่วมแชร์</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <button onclick="switchTab('resources'); playClickSound();" class="mt-6 w-full py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-2xl font-bold shadow-lg shadow-brand-600/20 transition-all text-center flex items-center justify-center space-x-2 bouncy-hover">
+                        <span>ไปลุยคลังความรู้กันเลย!</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 5 Steps Timeline for Students -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100">
+                <div class="text-center max-w-xl mx-auto mb-8">
+                    <h3 class="text-2xl font-bold text-slate-800">5 ขั้นตอนสู่ความสำเร็จ (Your Adventure Pathway)</h3>
+                    <p class="text-sm text-slate-500 mt-1">ทำตามขั้นตอนเหล่านี้เพื่อกอบกู้เกาะและรับใบเกียรติยศสายลับทองคำ!</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6 relative">
+                    <!-- Step 1 -->
+                    <div class="relative bg-brand-50 p-5 rounded-2xl border border-brand-100 flex flex-col items-center text-center bouncy-hover">
+                        <div class="w-12 h-12 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center text-lg shadow-md mb-3">1</div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">สวมรอยสายลับ</h4>
+                        <p class="text-xs text-slate-500">อ่านบันทึกประเด็นปัญหาและรับสัญญาสายลับจากผู้ใหญ่</p>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="relative bg-brand-50 p-5 rounded-2xl border border-brand-100 flex flex-col items-center text-center bouncy-hover">
+                        <div class="w-12 h-12 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center text-lg shadow-md mb-3">2</div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">ฝึกฝนคลังปัญญา</h4>
+                        <p class="text-xs text-slate-500">ติวเข้มกฎ และเล่นเครื่องทำประโยคจำลองทดลองพูด</p>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="relative bg-brand-50 p-5 rounded-2xl border border-brand-100 flex flex-col items-center text-center bouncy-hover">
+                        <div class="w-12 h-12 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center text-lg shadow-md mb-3">3</div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">ส่งพิกัดสื่อสาร</h4>
+                        <p class="text-xs text-slate-500">แชร์เคล็ดลับช่วยจำร่วมกันในคอมมูนิตี้ศูนย์วิทยุ</p>
+                    </div>
+                    <!-- Step 4 -->
+                    <div class="relative bg-brand-50 p-5 rounded-2xl border border-brand-100 flex flex-col items-center text-center bouncy-hover">
+                        <div class="w-12 h-12 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center text-lg shadow-md mb-3">4</div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">ปลดล็อกกรงกล</h4>
+                        <p class="text-xs text-slate-500">เลือกตอบโค้ด Have/Has เพื่อเปิดประตูกรงสัตว์วิเศษ</p>
+                    </div>
+                    <!-- Step 5 -->
+                    <div class="relative bg-brand-50 p-5 rounded-2xl border border-brand-100 flex flex-col items-center text-center bouncy-hover">
+                        <div class="w-12 h-12 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center text-lg shadow-md mb-3">5</div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">รับเกียรติยศสายลับ</h4>
+                        <p class="text-xs text-slate-500">ประเมินตนเอง และพิมพ์เกียรติยศเมื่อช่วยสัตว์สำเร็จ</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 2: Resources (แหล่งข้อมูล/สื่อการเรียนรู้) -->
+        <section id="content-resources" class="tab-content hidden space-y-8 animate-fade-in">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">ศูนย์การเรียนรู้เคลื่อนที่ความมั่นคงภาษาอังกฤษ</span>
+                <h2 class="text-3xl font-bold text-slate-800">มาสืบค้นและทำความเข้าใจ "Have & Has" กัน!</h2>
+                <p class="text-slate-600 text-sm sm:text-base">ก่อนจะแก้รหัสลับเพื่อช่วยเพื่อนร่วมโลกวิเศษ เรามาศึกษาคัมภีร์ที่ถูกต้องอย่างละเอียดกันเถอะ</p>
+            </div>
+
+            <!-- Multimedia section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Video / Visual Guide Card with real Youtube toggle & Interactive Slides -->
+                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-slate-800 flex items-center space-x-2">
+                                <i class="fa-solid fa-circle-play text-red-500"></i>
+                                <span>1. แหล่งศึกษาความรู้มัลติมีเดีย</span>
+                            </h3>
+                            <!-- Toggle Button for Video / Interactive Slide Deck -->
+                            <div class="inline-flex rounded-lg border border-slate-200 p-1 bg-slate-50 text-xs font-bold">
+                                <button onclick="toggleResourceMode('video')" id="btn-toggle-video" class="px-2.5 py-1.5 rounded-md bg-brand-500 text-white shadow-sm transition-all">วิดีโอ YouTube</button>
+                                <button onclick="toggleResourceMode('slides')" id="btn-toggle-slides" class="px-2.5 py-1.5 rounded-md text-slate-600 hover:text-slate-800 transition-all">สไลด์สรุปบทเรียน</button>
+                            </div>
+                        </div>
+
+                        <!-- Video Container (YouTube Embed) -->
+                        <div id="resource-video-container" class="relative aspect-video rounded-2xl bg-slate-900 overflow-hidden shadow-inner border border-slate-800">
+                            <iframe id="youtube-frame" class="w-full h-full" src="https://www.youtube.com/embed/8scxeHkopv8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        </div>
+
+                        <!-- Interactive Slide Deck Container (Hidden by default) -->
+                        <div id="resource-slides-container" class="hidden relative aspect-video rounded-2xl bg-gradient-to-br from-indigo-900 to-slate-900 p-6 text-white flex flex-col justify-between shadow-inner border border-slate-800">
+                            <!-- Header Info -->
+                            <div class="flex justify-between items-center">
+                                <span class="bg-white/20 text-white px-2.5 py-1 rounded-full text-[10px] font-bold">สไลด์สรุปเนื้อหาอัจฉริยะ (P.4)</span>
+                                <span class="text-xs text-brand-300 font-semibold" id="slide-number-display">หน้า 1 / 4</span>
+                            </div>
+
+                            <!-- Slide Content (Will be dynamically swapped by JS) -->
+                            <div class="my-auto text-center space-y-3" id="slide-content-area">
+                                <!-- Default Slide 1 -->
+                                <div class="slide-page space-y-2 block" id="slide-p1">
+                                    <h4 class="text-xl sm:text-2xl font-bold text-amber-300">💡 อะไรคือ Have และ Has?</h4>
+                                    <p class="text-sm text-slate-200 leading-relaxed max-w-md mx-auto">
+                                        ทั้งสองคำแปลว่า <strong>"มี"</strong> เหมือนกันเป๊ะ! แต่จะใช้คำไหน ขึ้นอยู่กับ <strong>"ประธาน (Subject)"</strong> ของประโยคเป็นหลักจ้า
+                                    </p>
+                                </div>
+                                <!-- Slide 2 -->
+                                <div class="slide-page space-y-2 hidden" id="slide-p2">
+                                    <h4 class="text-xl sm:text-2xl font-bold text-emerald-300">👥 กลุ่มประธานพหูพจน์ (หลายคน/สิ่ง)</h4>
+                                    <p class="text-sm text-slate-200 leading-relaxed max-w-md mx-auto">
+                                        ประธานที่มีหลายสิ่ง รวมทั้ง <span class="text-amber-300 font-bold">I</span> และ <span class="text-amber-300 font-bold">You</span> จะถูกจับคู่กับกริยา <span class="bg-emerald-500 px-2 py-0.5 rounded font-black text-white">HAVE</span> เสมอ!
+                                    </p>
+                                    <p class="text-xs text-slate-400 italic">ตัวอย่าง: I have a cat, They have long tails.</p>
+                                </div>
+                                <!-- Slide 3 -->
+                                <div class="slide-page space-y-2 hidden" id="slide-p3">
+                                    <h4 class="text-xl sm:text-2xl font-bold text-amber-400">👤 กลุ่มประธานเอกพจน์ (คนเดียว/ตัวเดียว)</h4>
+                                    <p class="text-sm text-slate-200 leading-relaxed max-w-md mx-auto">
+                                        ประธานที่มีเพียงแค่ 1 เดียว เช่น <span class="text-indigo-300 font-bold">He, She, It, Max</span> ผู้แสนโดดเดี่ยวและขี้เหงา จะจับคู่กับ <span class="bg-amber-500 px-2 py-0.5 rounded font-black text-white">HAS</span>
+                                    </p>
+                                    <p class="text-xs text-slate-400 italic">ตัวอย่าง: He has a magic key, It has wings.</p>
+                                </div>
+                                <!-- Slide 4 -->
+                                <div class="slide-page space-y-2 hidden" id="slide-p4">
+                                    <h4 class="text-xl sm:text-2xl font-bold text-violet-300">✍️ บันทึกช่วยจำสายลับ!</h4>
+                                    <p class="text-sm text-slate-200 leading-relaxed max-w-md mx-auto italic">
+                                        "I, You, We, They ร่วมควงคู่ลุยเดี่ยวไปกับ <strong>HAVE</strong><br>
+                                        He, She, It ตัวคนเดียวขี้เหงาใจ พึ่งพา <strong>HAS</strong>"
+                                    </p>
+                                    <div class="pt-2">
+                                        <button onclick="switchTab('mission'); playClickSound();" class="px-4 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-xs font-bold transition-all">พร้อมแล้วไปกู้ภัยสัตว์กัน!</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Footer Nav -->
+                            <div class="flex justify-between items-center">
+                                <button onclick="prevSlide()" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-xs transition-all flex items-center space-x-1"><i class="fa-solid fa-chevron-left"></i> <span>ย้อนกลับ</span></button>
+                                <button onclick="nextSlide()" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 rounded-xl text-xs font-bold transition-all flex items-center space-x-1"><span>ถัดไป</span> <i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="mt-6 border-t border-slate-100 pt-4 flex justify-between items-center">
+                        <p class="text-xs text-slate-500">
+                            *ข้อมูลสิทธิ์เนื้อหา: วิดีโอสื่อการเรียนการสอนอย่างเป็นทางการสำหรับระดับประถมศึกษาตอนต้น
+                        </p>
+                        <button onclick="speakSpeech('Welcome to the learning unit of have and has, language detective!')" class="text-brand-500 hover:text-brand-600 text-xs flex items-center space-x-1">
+                            <i class="fa-solid fa-volume-high"></i> <span>ทดลองฟังเสียงอังกฤษ</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grammar Table Rule Card -->
+                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100 space-y-6">
+                    <h3 class="text-xl font-bold text-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-table text-indigo-500"></i>
+                        <span>2. ตารางเวทมนตร์ สรุปยอดกฎเหล็ก</span>
+                    </h3>
+
+                    <!-- Interactive Rules Table -->
+                    <div class="overflow-hidden border border-brand-100 rounded-2xl shadow-sm">
+                        <table class="min-w-full divide-y divide-slate-100">
+                            <thead class="bg-brand-500 text-white">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">กลุ่มประธาน</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">ตัวอย่างประธาน (Subject)</th>
+                                    <th scope="col" class="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider bg-indigo-600">กริยาที่ใช้</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-100 text-sm">
+                                <tr class="hover:bg-slate-50 transition-colors cursor-pointer" onclick="testSandbox('They', 'plural'); speakSpeech('They have some food.');">
+                                    <td class="px-4 py-3 font-semibold text-slate-800 flex items-center space-x-1.5">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                        <span>พหูพจน์ (หลายสิ่ง)</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-600 font-mono text-xs">I, You, We, They, Dogs 🐶🐶, Kids</td>
+                                    <td class="px-4 py-3 text-center font-extrabold text-lg text-emerald-600 bg-emerald-50/50">HAVE</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors cursor-pointer" onclick="testSandbox('He', 'singular'); speakSpeech('He has a key.');">
+                                    <td class="px-4 py-3 font-semibold text-slate-800 flex items-center space-x-1.5">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                        <span>เอกพจน์ (หนึ่งเดียว)</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-600 font-mono text-xs">He, She, It, Max 👤, A Cat 🐱, Dr. Max</td>
+                                    <td class="px-4 py-3 text-center font-extrabold text-lg text-amber-600 bg-amber-50/50">HAS</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mnemonic with Audio -->
+                    <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl space-y-2 flex justify-between items-start">
+                        <div class="space-y-1">
+                            <h4 class="font-bold text-indigo-900 text-sm flex items-center space-x-1.5">
+                                <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                                <span>กลอนจำง่ายสำหรับทดสอบฝึกร้อง:</span>
+                            </h4>
+                            <p class="text-xs sm:text-sm text-indigo-950 italic leading-relaxed pl-5">
+                                "I / You / We / They มากหลายคน ใช้คู่กับ <strong>HAVE</strong><br>
+                                He / She / It หนึ่งคนเหงาใจ เลือกใช้คู่กับ <strong>HAS</strong>"
+                            </p>
+                        </div>
+                        <button onclick="speakSpeech('I, You, We, They use have. He, She, It use has.')" class="bg-indigo-200 hover:bg-indigo-300 text-indigo-700 p-2.5 rounded-xl transition-all shadow-sm">
+                            <i class="fa-solid fa-volume-high text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Sentence Builder Lab (Sandbox) -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-brand-100 text-brand-600 p-2.5 rounded-xl">
+                            <i class="fa-solid fa-wand-magic-sparkles text-xl animate-pulse"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800">เครื่องจำลองภาษาอัจฉริยะ (Interactive Sentence Lab)</h3>
+                            <p class="text-xs text-slate-500">คลิกประธาน กริยา และกรรมเพื่อลองแต่งประโยคให้ "Grammar Cop" ตรวจสอบได้แบบเรียลไทม์!</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="clearSandbox(); playClickSound();" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all"><i class="fa-solid fa-rotate-left mr-1"></i> เริ่มต้นใหม่</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Column 1: Choose Subject -->
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
+                        <span class="text-xs font-bold text-indigo-600 uppercase tracking-widest"><i class="fa-solid fa-user-tag mr-1"></i> 1. เลือกประธาน (Subject)</span>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="selectSandboxWord('subject', 'I', 'plural_exception')" class="btn-sandbox-sub px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left flex justify-between items-center"><span>I</span> <span class="text-[10px] text-slate-400">ฉัน (พิเศษ)</span></button>
+                            <button onclick="selectSandboxWord('subject', 'You', 'plural')" class="btn-sandbox-sub px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left flex justify-between items-center"><span>You</span> <span class="text-[10px] text-slate-400">คุณ</span></button>
+                            <button onclick="selectSandboxWord('subject', 'We', 'plural')" class="btn-sandbox-sub px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left flex justify-between items-center"><span>We</span> <span class="text-[10px] text-slate-400">พวกเรา</span></button>
+                            <button onclick="selectSandboxWord('subject', 'They', 'plural')" class="btn-sandbox-sub px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left flex justify-between items-center"><span>They</span> <span class="text-[10px] text-slate-400">พวกเขา</span></button>
+                            <button onclick="selectSandboxWord('subject', 'He', 'singular')" class="btn-sandbox-sub px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left flex justify-between items-center"><span>He</span> <span class="text-[10px] text-slate-400">เขา (ช)</span></button>
+                            <button onclick="selectSandboxWord('subject', 'She', 'singular')" class="btn-sandbox-sub px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left flex justify-between items-center"><span>She</span> <span class="text-[10px] text-slate-400">เธอ (ญ)</span></button>
+                            <button onclick="selectSandboxWord('subject', 'It', 'singular')" class="btn-sandbox-sub px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left flex justify-between items-center"><span>It</span> <span class="text-[10px] text-slate-400">มัน</span></button>
+                            <button onclick="selectSandboxWord('subject', 'A monkey 🐒', 'singular')" class="btn-sandbox-sub px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left flex justify-between items-center"><span>🐒 A monkey</span> <span class="text-[10px] text-slate-400">ลิง 1 ตัว</span></button>
+                            <button onclick="selectSandboxWord('subject', 'My dogs 🐶🐶', 'plural')" class="btn-sandbox-sub px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left flex justify-between items-center"><span>🐶 My dogs</span> <span class="text-[10px] text-slate-400">หมาหลายตัว</span></button>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Choose Verb -->
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
+                        <span class="text-xs font-bold text-indigo-600 uppercase tracking-widest"><i class="fa-solid fa-shapes mr-1"></i> 2. เลือกกริยา (Verb)</span>
+                        <div class="flex flex-col space-y-3">
+                            <button onclick="selectSandboxWord('verb', 'have')" class="btn-sandbox-verb py-3 px-4 font-bold text-base rounded-2xl bg-white border border-slate-200 text-emerald-600 hover:border-emerald-500 flex justify-between items-center">
+                                <span>HAVE</span> <span class="bg-emerald-50 text-emerald-700 text-[10px] px-2 py-0.5 rounded-md">พหูพจน์ + I/You</span>
+                            </button>
+                            <button onclick="selectSandboxWord('verb', 'has')" class="btn-sandbox-verb py-3 px-4 font-bold text-base rounded-2xl bg-white border border-slate-200 text-amber-600 hover:border-amber-500 flex justify-between items-center">
+                                <span>HAS</span> <span class="bg-amber-50 text-amber-700 text-[10px] px-2 py-0.5 rounded-md">เอกพจน์</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Choose Object -->
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
+                        <span class="text-xs font-bold text-indigo-600 uppercase tracking-widest"><i class="fa-solid fa-gift mr-1"></i> 3. เลือกกรรม (Object)</span>
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="selectSandboxWord('object', 'magic wings 🧚')" class="btn-sandbox-obj px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left">🧚 magic wings</button>
+                            <button onclick="selectSandboxWord('object', 'a golden key 🔑')" class="btn-sandbox-obj px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left">🔑 a golden key</button>
+                            <button onclick="selectSandboxWord('object', 'a shiny horn 🦄')" class="btn-sandbox-obj px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left">🦄 a shiny horn</button>
+                            <button onclick="selectSandboxWord('object', 'long ears 🐰')" class="btn-sandbox-obj px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left">🐰 long ears</button>
+                            <button onclick="selectSandboxWord('object', 'green skin 🦖')" class="btn-sandbox-obj px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left">🦖 green skin</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Monitor Screen -->
+                <div class="mt-8 bg-slate-950 text-white p-6 rounded-2xl flex flex-col justify-between min-h-48 shadow-2xl relative overflow-hidden">
+                    <div class="absolute -right-8 -bottom-8 text-white/5 text-9xl pointer-events-none">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    
+                    <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+                        <span class="text-[10px] text-brand-400 font-mono font-bold tracking-wider uppercase"><i class="fa-solid fa-display animate-pulse text-emerald-400 mr-1.5"></i> Live Sentence Cop // Terminal</span>
+                        <div class="flex space-x-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                        </div>
+                    </div>
+
+                    <!-- Rendered sentence assembly -->
+                    <div class="text-center font-mono py-6 flex flex-wrap justify-center items-center gap-3">
+                        <span id="screen-sub" class="text-indigo-300 font-sans font-bold text-lg px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/50 min-w-16">___</span>
+                        <span id="screen-verb" class="text-slate-500 font-sans font-bold text-lg px-3 py-1.5 rounded-xl border border-dashed border-slate-700 bg-slate-900/30 min-w-16">_____</span>
+                        <span id="screen-obj" class="text-amber-300 font-sans font-bold text-lg px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/50 min-w-24">___________</span>
+                    </div>
+
+                    <!-- Cop Verdict output -->
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-900 p-4 rounded-xl border border-slate-800">
+                        <div class="flex items-center space-x-3 text-left">
+                            <span class="text-2xl" id="cop-emoji">🚨</span>
+                            <div>
+                                <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">คำวิเคราะห์จากสารวัตรภาษา (Grammar Cop)</span>
+                                <p id="sandbox-cop-text" class="text-xs sm:text-sm text-slate-300">กรุณาเลือกประธาน กริยา และกรรมให้ครบชุด เพื่อเริ่มประมวลผล!</p>
+                            </div>
+                        </div>
+                        <button onclick="readAssembledSentence()" id="btn-speak-assembled" disabled class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs font-bold rounded-xl transition-all flex items-center space-x-1.5 cursor-not-allowed">
+                            <i class="fa-solid fa-volume-high"></i> <span>อ่านประโยคออกเสียง</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 3: Discussion Board (พื้นที่แลกเปลี่ยนความคิดเห็น) -->
+        <section id="content-discussion" class="tab-content hidden space-y-8 animate-fade-in">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100 space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center pb-6 border-b border-slate-100 gap-4">
+                    <div>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-brand-100 text-brand-800"><i class="fa-solid fa-radio mr-1"></i> พื้นที่รวมพลังสายลับ</span>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mt-2">ศูนย์วิทยุสื่อสารและแบ่งปันความรู้</h2>
+                        <p class="text-slate-500 text-xs sm:text-sm">เขียนแชร์ข้อมูลเบาะแส กลเม็ด วิธีจำสูตร Have/Has เพื่อแบ่งปันเพื่อนร่วมชั้นเรียน</p>
+                    </div>
+                    <div class="flex space-x-2 w-full md:w-auto">
+                        <button onclick="openNewTopicModal()" class="flex-1 md:flex-none px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-bold shadow-md shadow-brand-600/10 transition-all flex items-center justify-center space-x-1.5 bouncy-hover">
+                            <i class="fa-solid fa-plus"></i> <span>เขียนเบาะแสใหม่</span>
+                        </button>
+                        <button onclick="clearAllComments();" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-rose-600 rounded-xl text-xs font-bold transition-all" title="รีเซ็ตบอร์ดกลับเป็นค่าเริ่มต้น"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                </div>
+
+                <!-- Feed of Discussion -->
+                <div class="space-y-4" id="comments-container">
+                    <!-- Loaded dynamically via JavaScript on Init -->
+                </div>
+            </div>
+
+            <!-- Modal for Adding Discussion Post -->
+            <div id="new-topic-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+                <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-4 shadow-2xl relative animate-fade-in">
+                    <button onclick="closeNewTopicModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+                    <h3 class="text-xl font-bold text-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-bullhorn text-brand-500"></i>
+                        <span>เขียนส่งเบาะแสและวิธีจำ</span>
+                    </h3>
+                    <p class="text-xs text-slate-500">แบ่งปันไอเดียหรือสิ่งที่ได้เรียนรู้ เพื่อช่วยเพื่อนๆ ป.4 ทำภารกิจด้วยกัน</p>
+                    
+                    <form id="new-topic-form" onsubmit="submitNewTopic(event)" class="space-y-4 pt-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">หมวดหมู่เบาะแส</label>
+                            <select id="topic-tag" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm">
+                                <option value="tip">💡 เคล็ดลับช่วยจำ</option>
+                                <option value="question">❓ สอบถามผู้รู้</option>
+                                <option value="congratulations">🎉 ฉลองความสำเร็จ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อของสายลับ / ชั้นเรียน</label>
+                            <input type="text" id="topic-username" placeholder="เช่น สายลับโฟกัส ป.4/1" required class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">ข้อความกลเม็ดเคล็ดลับ</label>
+                            <textarea id="topic-content" rows="3" placeholder="เขียนวิธีช่วยจำ Have/Has เช่น: He She It มีคนเดียว ตัว S ด้านหลัง HAS ย่อมาจาก Single..." required class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"></textarea>
+                        </div>
+                        <div class="flex space-x-3 pt-2">
+                            <button type="button" onclick="closeNewTopicModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm transition-colors">ยกเลิก</button>
+                            <button type="submit" class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold text-sm transition-colors shadow-md shadow-brand-600/10">โพสต์เบาะแส</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 4: Problem Solving Form (แบบฟอร์มเสนอแนวทางแก้ปัญหา / ภารกิจกู้ชีพ) -->
+        <section id="content-mission" class="tab-content hidden space-y-8 animate-fade-in">
+            <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="space-y-2">
+                    <span class="inline-block bg-white/20 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md">ภารกิจสูงสุดกู้ชีพเกาะ</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold">กู้คืนระบบความปลอดภัย "Have/Has"</h2>
+                    <p class="text-amber-100 text-xs sm:text-sm">เลือกกริยา Have หรือ Has ที่ถูกต้องตามประธานเพื่อสั่นสัญญาณสะเดาะประตูกรงกลช่วยสัตว์วิเศษ!</p>
+                </div>
+                <!-- Progress Bar visual -->
+                <div class="bg-amber-700/40 p-4 rounded-2xl border border-amber-400/30 text-center w-full md:w-auto min-w-[200px] shadow-inner">
+                    <div class="text-xs uppercase font-bold text-amber-200 mb-1"><i class="fa-solid fa-shield-cat"></i> สัตว์ที่รอดพ้นคุกกล</div>
+                    <div class="text-3xl font-black text-white" id="rescue-count">0 / 5 ตัว</div>
+                    <div class="w-full bg-amber-950/40 rounded-full h-3 mt-2 overflow-hidden border border-amber-500/20">
+                        <div id="rescue-progress" class="bg-emerald-400 h-full w-0 transition-all duration-700 ease-out"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz / Cages Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="cages-grid">
+                
+                <!-- Cage 1: Bunny -->
+                <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-100 hover:border-slate-300 transition-all flex flex-col justify-between overflow-hidden relative" id="cage-card-1">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-start">
+                            <!-- SVG Bunny Animation Container with bars overlay -->
+                            <div class="relative w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-3xl overflow-hidden" id="cage-container-1">
+                                <span id="cage-icon-1" class="z-0 select-none">🐰</span>
+                                <!-- Vertical Cage Bars -->
+                                <div class="absolute inset-x-2 inset-y-0 flex justify-between z-10 pointer-events-none transition-all duration-1000" id="cage-bars-1">
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                </div>
+                            </div>
+                            <span id="cage-status-1" class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider bg-rose-50 text-rose-600 uppercase border border-rose-100"><i class="fa-solid fa-lock mr-1"></i> ถูกขังอยู่</span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-indigo-500">สัตว์วิเศษตัวที่ 1</span>
+                            <h4 class="font-bold text-slate-800 text-lg">กระต่ายพิกเซลหูยาว (Bunny)</h4>
+                            <p class="text-xs text-slate-500 mt-1">ประโยคสแกนเสียงที่พัง: <br><span class="font-mono bg-rose-50 text-rose-600 px-2 py-0.5 rounded font-bold">"It have long ears."</span></p>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-700">ช่วยประกอบรหัสปลดล็อก:</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="solveCage(1, 'has')" class="solve-btn-1 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 transition-colors">It has</button>
+                                <button onclick="solveCage(1, 'have')" class="solve-btn-1 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 transition-colors">It have</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 border-t border-slate-100 pt-3">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase">กล้องแอบส่องเบาะแส:</span>
+                        <p class="text-xs text-slate-500">ประธานคือ "It" หมายถึงมันตัวเดียว ขี้เหงาแบบนี้กริยาลงท้ายจะรักตัว S เป็นชีวิตจิตใจ!</p>
+                    </div>
+                </div>
+
+                <!-- Cage 2: Lion -->
+                <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-100 hover:border-slate-300 transition-all flex flex-col justify-between overflow-hidden relative" id="cage-card-2">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div class="relative w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-3xl overflow-hidden" id="cage-container-2">
+                                <span id="cage-icon-2" class="z-0 select-none">🦁</span>
+                                <div class="absolute inset-x-2 inset-y-0 flex justify-between z-10 pointer-events-none transition-all duration-1000" id="cage-bars-2">
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                </div>
+                            </div>
+                            <span id="cage-status-2" class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider bg-rose-50 text-rose-600 uppercase border border-rose-100"><i class="fa-solid fa-lock mr-1"></i> ถูกขังอยู่</span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-indigo-500">สัตว์วิเศษตัวที่ 2</span>
+                            <h4 class="font-bold text-slate-800 text-lg">สิงโตเจ้าขนปุย (Lion)</h4>
+                            <p class="text-xs text-slate-500 mt-1">ประโยคสแกนเสียงที่พัง: <br><span class="font-mono bg-rose-50 text-rose-600 px-2 py-0.5 rounded font-bold">"They has big paws."</span></p>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-700">ช่วยประกอบรหัสปลดล็อก:</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="solveCage(2, 'has')" class="solve-btn-2 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 transition-colors">They has</button>
+                                <button onclick="solveCage(2, 'have')" class="solve-btn-2 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 transition-colors">They have</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 border-t border-slate-100 pt-3">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase">กล้องแอบส่องเบาะแส:</span>
+                        <p class="text-xs text-slate-500">ประธานคือ "They" หมายถึงพวกเขาทั้งหลาย คึกคักหลายหัวใจ ชอบความกว้างใหญ่ ไม่เหงาใจใช้ HAVE</p>
+                    </div>
+                </div>
+
+                <!-- Cage 3: Parrot -->
+                <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-100 hover:border-slate-300 transition-all flex flex-col justify-between overflow-hidden relative" id="cage-card-3">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div class="relative w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-3xl overflow-hidden" id="cage-container-3">
+                                <span id="cage-icon-3" class="z-0 select-none">🦜</span>
+                                <div class="absolute inset-x-2 inset-y-0 flex justify-between z-10 pointer-events-none transition-all duration-1000" id="cage-bars-3">
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                </div>
+                            </div>
+                            <span id="cage-status-3" class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider bg-rose-50 text-rose-600 uppercase border border-rose-100"><i class="fa-solid fa-lock mr-1"></i> ถูกขังอยู่</span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-indigo-500">สัตว์วิเศษตัวที่ 3</span>
+                            <h4 class="font-bold text-slate-800 text-lg">นกแก้วจอมพูดเก่ง (Parrot)</h4>
+                            <p class="text-xs text-slate-500 mt-1">ประโยคสแกนเสียงที่พัง: <br><span class="font-mono bg-rose-50 text-rose-600 px-2 py-0.5 rounded font-bold">"She have wings."</span></p>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-700">ช่วยประกอบรหัสปลดล็อก:</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="solveCage(3, 'has')" class="solve-btn-3 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 transition-colors">She has</button>
+                                <button onclick="solveCage(3, 'have')" class="solve-btn-3 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 transition-colors">She have</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 border-t border-slate-100 pt-3">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase">กล้องแอบส่องเบาะแส:</span>
+                        <p class="text-xs text-slate-500">ประธานคือ "She" หล่อนคนเดียวแสนโดดเดี่ยวไร้เงาคนร่วมทาง! ต้องเสริมสร้างพลังคู่ HAS</p>
+                    </div>
+                </div>
+
+                <!-- Cage 4: Unicorn -->
+                <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-100 hover:border-slate-300 transition-all flex flex-col justify-between overflow-hidden relative" id="cage-card-4">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div class="relative w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-3xl overflow-hidden" id="cage-container-4">
+                                <span id="cage-icon-4" class="z-0 select-none">🦄</span>
+                                <div class="absolute inset-x-2 inset-y-0 flex justify-between z-10 pointer-events-none transition-all duration-1000" id="cage-bars-4">
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                </div>
+                            </div>
+                            <span id="cage-status-4" class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider bg-rose-50 text-rose-600 uppercase border border-rose-100"><i class="fa-solid fa-lock mr-1"></i> ถูกขังอยู่</span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-indigo-500">สัตว์วิเศษตัวที่ 4</span>
+                            <h4 class="font-bold text-slate-800 text-lg">ยูนิคอร์นสายสวรรค์ (Unicorn)</h4>
+                            <p class="text-xs text-slate-500 mt-1">ประโยคสแกนเสียงที่พัง: <br><span class="font-mono bg-rose-50 text-rose-600 px-2 py-0.5 rounded font-bold">"We has a shiny horn."</span></p>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-700">ช่วยประกอบรหัสปลดล็อก:</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="solveCage(4, 'has')" class="solve-btn-4 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 transition-colors">We has</button>
+                                <button onclick="solveCage(4, 'have')" class="solve-btn-4 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 transition-colors">We have</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 border-t border-slate-100 pt-3">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase">กล้องแอบส่องเบาะแส:</span>
+                        <p class="text-xs text-slate-500">ประธานคือ "We" หมายถึงพวกเรา พหูพจน์รวมศูนย์กริยาแข็งแกร่งต้อง HAVE โลด!</p>
+                    </div>
+                </div>
+
+                <!-- Cage 5: Dino -->
+                <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-100 hover:border-slate-300 transition-all flex flex-col justify-between overflow-hidden relative" id="cage-card-5">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div class="relative w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-3xl overflow-hidden" id="cage-container-5">
+                                <span id="cage-icon-5" class="z-0 select-none">🦖</span>
+                                <div class="absolute inset-x-2 inset-y-0 flex justify-between z-10 pointer-events-none transition-all duration-1000" id="cage-bars-5">
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                    <div class="w-1 bg-slate-400/80 rounded h-full shadow"></div>
+                                </div>
+                            </div>
+                            <span id="cage-status-5" class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider bg-rose-50 text-rose-600 uppercase border border-rose-100"><i class="fa-solid fa-lock mr-1"></i> ถูกขังอยู่</span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-indigo-500">สัตว์วิเศษตัวที่ 5</span>
+                            <h4 class="font-bold text-slate-800 text-lg">ไดโนเสาร์ขี้เล่น (Dino)</h4>
+                            <p class="text-xs text-slate-500 mt-1">ประโยคสแกนเสียงที่พัง: <br><span class="font-mono bg-rose-50 text-rose-600 px-2 py-0.5 rounded font-bold">"I has green skin."</span></p>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-700">ช่วยประกอบรหัสปลดล็อก:</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="solveCage(5, 'has')" class="solve-btn-5 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 transition-colors">I has</button>
+                                <button onclick="solveCage(5, 'have')" class="solve-btn-5 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 transition-colors">I have</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 border-t border-slate-100 pt-3">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase">กล้องแอบส่องเบาะแส:</span>
+                        <p class="text-xs text-slate-500">ข้อยกเว้นจำขึ้นสมอง!: "I" (ฉัน) เป็นหัวหน้ากลุ่มบุคคลสำคัญที่สุด บังคับเด็ดขาดคู่ HAVE เสมอ!</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="flex justify-between items-center bg-white p-6 rounded-3xl border border-slate-100">
+                <button onclick="resetGame(); playClickSound();" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-2xl transition-all flex items-center space-x-1.5 shadow-sm">
+                    <i class="fa-solid fa-rotate"></i> <span>เริ่มภารกิจใหม่ทั้งหมด</span>
+                </button>
+                <button onclick="switchTab('evaluation'); playClickSound();" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold rounded-2xl transition-all flex items-center space-x-1.5 shadow-lg shadow-brand-500/20">
+                    <span>ไปรับเกียรติยศและประเมิน</span> <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Custom Message Display Area -->
+            <div id="mission-alert" class="hidden p-4 rounded-2xl text-center font-bold text-sm"></div>
+        </section>
+
+        <!-- Tab 5: Self-Assessment & Rubric (การประเมินผลตนเอง และเกณฑ์คะแนน) -->
+        <section id="content-evaluation" class="tab-content hidden space-y-8 animate-fade-in">
+            <!-- Rubric Guide table -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100 space-y-6">
+                <div>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-violet-100 text-violet-800">เกณฑ์มาตรฐานสมาคมนักสืบ</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mt-2">ตารางเกณฑ์คะแนนรูบริกพิจารณาผลงาน (Rubric Score)</h2>
+                    <p class="text-slate-500 text-xs sm:text-sm">เปรียบเทียบดูความสามารถของตัวเองในระดับต่างๆ อย่างถูกต้องยุติธรรม</p>
+                </div>
+
+                <div class="overflow-x-auto border border-violet-100 rounded-2xl shadow-sm">
+                    <table class="min-w-full divide-y divide-slate-100 text-xs sm:text-sm">
+                        <thead class="bg-violet-600 text-white">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-left font-bold uppercase tracking-wider">ประเด็นการประเมิน</th>
+                                <th scope="col" class="px-4 py-3 text-left font-bold uppercase tracking-wider bg-emerald-600">ดีเยี่ยม (3 คะแนน)</th>
+                                <th scope="col" class="px-4 py-3 text-left font-bold uppercase tracking-wider bg-amber-500">พอใช้ (2 คะแนน)</th>
+                                <th scope="col" class="px-4 py-3 text-left font-bold uppercase tracking-wider bg-rose-500">ปรับปรุง (1 คะแนน)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-4 font-bold text-slate-800">1. การกู้คืนรหัสกรง (Have/Has)</td>
+                                <td class="px-4 py-4 text-emerald-800 bg-emerald-50/20 font-semibold">ปลดล็อกกรงสัตว์สำเร็จทั้งหมด 5 ตัว</td>
+                                <td class="px-4 py-4 text-amber-800 bg-amber-50/20">ปลดล็อกกรงสัตว์สำเร็จ 2-4 ตัว</td>
+                                <td class="px-4 py-4 text-rose-800 bg-rose-50/20">ปลดล็อกกรงสัตว์สำเร็จ 0-1 ตัว</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-4 font-bold text-slate-800">2. การแบ่งปันโพสต์เบาะแส</td>
+                                <td class="px-4 py-4 text-emerald-800 bg-emerald-50/20 font-semibold">แชร์เทคนิคที่แต่งประโยคหรือเข้าใจชัดเจนมาก</td>
+                                <td class="px-4 py-4 text-amber-800 bg-amber-50/20">แชร์ข้อความสั้นๆ ทั่วไป ไม่มีตัวอย่างชี้วัด</td>
+                                <td class="px-4 py-4 text-rose-800 bg-rose-50/20">ไม่ได้มีส่วนร่วมในบอร์ดแลกเปลี่ยนเลย</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-4 font-bold text-slate-800">3. ความตั้งใจและกระบวนการคิด</td>
+                                <td class="px-4 py-4 text-emerald-800 bg-emerald-50/20 font-semibold">ใช้สื่อการเรียน ครบทุกขั้นตอนอย่างลึกซึ้ง</td>
+                                <td class="px-4 py-4 text-amber-800 bg-amber-50/20">ใช้เครื่องประกอบวิทยุ และกดสุ่มข้ามขั้นตอนบ้าง</td>
+                                <td class="px-4 py-4 text-rose-800 bg-rose-50/20">สุ่มตอบภารกิจโดยไม่ได้ส่องดูคลังข้อมูลเลย</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Self-Reflection & Live Certificate Unlocker -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100 space-y-6">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-violet-100 text-violet-600 p-2.5 rounded-xl">
+                        <i class="fa-solid fa-clipboard-user text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">บันทึกสะท้อนความคิดของยอดสายลับ (Self-Reflection Form)</h3>
+                        <p class="text-xs text-slate-500">กรอกข้อมูลสะท้อนความคิดของคุณเพื่อส่งออกและปลดเกียรติยศสายลับเก่งอังกฤษดีเด่น!</p>
+                    </div>
+                </div>
+
+                <!-- Form to get student's name -->
+                <form id="assessment-form" onsubmit="generateCertificate(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1.5">ชื่อ-นามสกุลจริงของสายลับ (จะพิมพ์บนใบประกาศ)</label>
+                            <input type="text" id="cert-student-name" placeholder="เช่น ด.ช. ชัยชนะ ยอดนักเรียน" required class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1.5">ระดับความมั่นใจในการจำแนก "Have / Has" ตอนนี้:</label>
+                            <div class="flex h-12 items-center bg-slate-50 px-4 rounded-2xl border border-slate-100">
+                                <span class="text-xs text-slate-500 mr-3">ต้องการทบทวน 😭</span>
+                                <div class="flex space-x-3 flex-grow justify-center">
+                                    <input type="radio" name="confidence" value="1" class="w-5 h-5 accent-brand-500" required>
+                                    <input type="radio" name="confidence" value="2" class="w-5 h-5 accent-brand-500">
+                                    <input type="radio" name="confidence" value="3" class="w-5 h-5 accent-brand-500">
+                                    <input type="radio" name="confidence" value="4" class="w-5 h-5 accent-brand-500">
+                                    <input type="radio" name="confidence" value="5" class="w-5 h-5 accent-brand-500" checked>
+                                </div>
+                                <span class="text-xs text-slate-500 ml-3">เก่งขึ้นเยอะ! 😎</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1.5">สื่อประเด็นการเรียนรู้ที่ช่วยให้หนูเข้าใจที่สุดวันนี้:</label>
+                            <select id="best-medium" class="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm h-[46px]">
+                                <option value="video">วิดีโอมัลติมีเดียพากย์ภาษาชัดเจน</option>
+                                <option value="table">สไลด์และกลอนสรุปบทเรียนยอดฝีมือ</option>
+                                <option value="sandbox">แท่นแต่งประโยคอัจฉริยะ & Grammar Cop ตรวจวิเคราะห์</option>
+                                <option value="comments">การอ่านวิเคราะห์และแชร์ไอเดียในบอร์ด</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1.5">สิ่งที่พบว่าท้าทายหรือชื่นชอบที่สุดในวันนี้คืออะไร?</label>
+                            <textarea id="reflection-text" rows="1" placeholder="เช่น ได้ช่วยเหลือน้องยูนิคอร์นด้วยประโยค We have..." class="w-full px-4 py-2.5 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm" required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-between items-center pt-2">
+                        <div class="text-xs text-slate-500 flex items-center space-x-1">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+                            <span>ต้องการการช่วยเหลือน้องสัตว์อย่างน้อย 1 ตัวเพื่อรับเกียรติยศ</span>
+                        </div>
+                        <button type="submit" class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-2xl font-bold shadow-lg shadow-brand-600/10 transition-colors flex items-center space-x-2 bouncy-hover">
+                            <i class="fa-solid fa-medal"></i> <span>ยื่นขอออกเกียรติบัตรสายลับ</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Feedback Message Output and Dynamic Certificate -->
+                <div id="certificate-unlocked-section" class="hidden space-y-6 pt-4 animate-fade-in">
+                    <div class="p-5 rounded-2xl text-center bg-emerald-50 border border-emerald-100 text-emerald-800">
+                        <p class="font-bold text-lg">🎉 อนุมัติการพิจารณาเกียรติยศสายลับภาษาอังกฤษแล้ว!</p>
+                        <p class="text-xs mt-1">ขอบคุณสำหรับการบันทึกสะท้อนความคิดเห็น หนูสามารถกดยื่นสั่งพิมพ์ใบเกียรติยศเพื่อบันทึกเป็นหลักฐานได้เลยนะจ๊ะ!</p>
+                    </div>
+
+                    <!-- Printable Certificate Card Layout -->
+                    <div id="printable-certificate" class="max-w-3xl mx-auto bg-amber-50 rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden cert-border border-amber-600">
+                        <!-- Watermarks & Background Swirls -->
+                        <div class="absolute -right-24 -bottom-24 text-amber-600/5 text-[280px] pointer-events-none transform -rotate-12">
+                            <i class="fa-solid fa-paw"></i>
+                        </div>
+                        <div class="absolute -left-24 -top-24 text-amber-600/5 text-[280px] pointer-events-none transform rotate-45">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+
+                        <!-- Top Logo / Headers -->
+                        <div class="text-center space-y-3 relative z-10">
+                            <div class="mx-auto w-16 h-16 bg-amber-600 text-white rounded-full flex items-center justify-center text-3xl shadow-md border-4 border-amber-200">
+                                <i class="fa-solid fa-award"></i>
+                            </div>
+                            <span class="font-serif italic text-amber-700 tracking-widest uppercase text-xs sm:text-sm font-bold block">Official Language Detective Agency</span>
+                            <h2 class="text-2xl sm:text-4xl font-extrabold text-amber-900 font-sans">เกียรติบัตรสายลับภาษาอังกฤษพิทักษ์โลก</h2>
+                            <div class="w-48 h-1 bg-amber-600 mx-auto rounded-full"></div>
+                        </div>
+
+                        <!-- Body Content -->
+                        <div class="text-center my-8 sm:my-12 space-y-6 relative z-10">
+                            <p class="text-slate-600 text-xs sm:text-sm">ใบสำคัญฉบับนี้ให้ไว้เพื่อแสดงว่าสมาคมขอกระทำการแต่งตั้ง</p>
+                            <h3 id="cert-display-name" class="text-xl sm:text-3xl font-black text-indigo-900 underline decoration-indigo-300 underline-offset-8">ด.ช. ชัยชนะ ยอดนักเรียน</h3>
+                            <p class="text-slate-600 text-xs sm:text-base max-w-xl mx-auto leading-relaxed">
+                                ได้เข้าร่วมปฏิบัติภารกิจ **Problem-Based Learning (PBL)** <br>
+                                คลี่คลายคดีสลักกลระบบกู้คืนภาษาและปลดล็อกช่วยเหลือสัตว์วิเศษด้วย <br>
+                                <strong class="text-indigo-800">"หลักการเลือกใช้ Have & Has สำหรับชั้นประถมศึกษาปีที่ 4"</strong> ได้สำเร็จและถูกต้องดีเยี่ยม
+                            </p>
+                        </div>
+
+                        <!-- Footer Details -->
+                        <div class="flex flex-col sm:flex-row justify-between items-center pt-8 border-t border-amber-200/60 relative z-10 gap-6">
+                            <!-- Left: Rescue Grade -->
+                            <div class="text-center sm:text-left space-y-1">
+                                <span class="text-[10px] uppercase text-slate-500 font-bold tracking-wider block">ผลงานการปลดปล่อยสัตว์วิเศษ</span>
+                                <div class="flex items-center space-x-1.5 text-amber-600 justify-center sm:justify-start">
+                                    <span class="font-extrabold text-sm sm:text-lg text-amber-800" id="cert-score-display">5/5 ตัวรอดพ้นคุกกล</span>
+                                    <div class="flex text-xs text-amber-500" id="cert-stars-display">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Middle: Stamp of approval (SVG Seal) -->
+                            <div class="w-20 h-20 border-4 border-dashed border-amber-600 rounded-full flex flex-col items-center justify-center text-[8px] font-bold text-amber-700/80 transform rotate-12 p-1 text-center bg-white/20 select-none">
+                                <i class="fa-solid fa-shield-halved text-xl mb-1 text-amber-600"></i>
+                                <span>CERTIFIED</span>
+                                <span>MAX DETECTIVE</span>
+                            </div>
+
+                            <!-- Right: Date and Sign -->
+                            <div class="text-center sm:text-right space-y-1">
+                                <span class="text-xs text-slate-700 block">ลงชื่อ <strong class="text-indigo-900 font-bold" id="cert-date-display">Dr. Detective Max</strong></span>
+                                <span class="text-[10px] text-slate-400 block">ผู้จัดการใหญ่สมาคมพิทักษ์ภาษา</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center space-x-4 pt-4">
+                        <button onclick="window.print();" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow-md transition-all flex items-center space-x-2 bouncy-hover">
+                            <i class="fa-solid fa-print"></i> <span>สั่งพิมพ์ / เซฟเกียรติบัตร (PDF)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800 mt-12 text-center text-xs">
+        <div class="max-w-7xl mx-auto px-4 space-y-3">
+            <p class="font-semibold text-slate-300">PBL Web-based Learning System: English Unit "Have & Has" for Grade 4</p>
+            <p>© 2026 ออกแบบและพัฒนาโดยผู้เชี่ยวชาญด้านสื่อนวัตกรรมและการออกแบบการสอนเพื่อการเรียนรู้ประถมศึกษายุคใหม่</p>
+            <div class="flex justify-center space-x-4 text-slate-500">
+                <span><i class="fa-solid fa-shield-halved"></i> ตรวจสอบการสื่อสารที่ปลอดภัย</span>
+                <span>•</span>
+                <span><i class="fa-solid fa-graduation-cap"></i> รองรับหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom sound generator script using Pure Web Audio API -->
+    <script>
+        // Use pure Web Audio API synthesis for zero external resources dependency
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Quick success note chime (ascending chord)
+        function playSuccessSound() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
+                notes.forEach((freq, index) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.1);
+                    
+                    gain.gain.setValueAtTime(0.15, now + index * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.1 + 0.4);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + index * 0.1);
+                    osc.stop(now + index * 0.1 + 0.4);
+                });
+            } catch(e) { console.log('Audio Context issues.'); }
+        }
+
+        // Quick mistake alarm buzz (low falling slider)
+        function playFailSound() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.linearRampToValueAtTime(80, now + 0.35);
+                
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } catch(e) { console.log('Audio Context issues.'); }
+        }
+
+        // Small tap high-pitched click
+        function playClickSound() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            } catch(e) { console.log('Audio Context issues.'); }
+        }
+
+        // Speak assembled or default texts using Speech Synthesis API
+        function speakSpeech(text) {
+            try {
+                if ('speechSynthesis' in window) {
+                    // Stop any ongoing speech
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'en-US';
+                    utterance.pitch = 1.1; // Cute high pitch for kids
+                    utterance.rate = 0.95; // Steady tempo
+                    window.speechSynthesis.speak(utterance);
+                }
+            } catch(e) {
+                console.log('Speech synthesis error');
+            }
+        }
+    </script>
+
+    <!-- Application Logic Script -->
+    <script>
+        // Application State Management
+        const gameState = {
+            currentSlide: 0,
+            totalSlides: 4,
+            sandbox: {
+                subject: '',
+                subjectType: '', // singular, plural, plural_exception
+                verb: '',
+                object: ''
+            },
+            cageAnswers: {
+                1: 'has',
+                2: 'have',
+                3: 'has',
+                4: 'have',
+                5: 'have'
+            },
+            rescuedPets: {
+                1: false,
+                2: false,
+                3: false,
+                4: false,
+                5: false
+            },
+            comments: []
+        };
+
+        // Initialize App on Window Load
+        window.onload = function() {
+            initComments();
+            renderComments();
+            // Trigger speech sandbox copy setup
+            clearSandbox();
+        };
+
+        // SPA Router Tab Switcher
+        function switchTab(tabId) {
+            // Hide all tab content elements
+            document.querySelectorAll('.tab-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show current section
+            const targetSection = document.getElementById(`content-${tabId}`);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+
+            // Reset tab styles (Desktop)
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-brand-600 flex items-center space-x-2";
+            });
+
+            // Mark active desktop button
+            const activeDesktopBtn = document.getElementById(`tab-btn-${tabId}`);
+            if (activeDesktopBtn) {
+                activeDesktopBtn.className = "tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-brand-700 bg-white shadow-sm flex items-center space-x-2";
+            }
+
+            // Close mobile navigation menu dropdown and swap icon back
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) {
+                mobileMenu.classList.add('hidden');
+                const menuIcon = document.getElementById('menu-icon');
+                if (menuIcon) {
+                    menuIcon.className = "fa-solid fa-bars text-2xl";
+                }
+            }
+
+            // Auto Scroll Window back to Top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Toggle mobile hamburger menu overlay
+        function toggleMobileMenu() {
+            playClickSound();
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                icon.className = "fa-solid fa-xmark text-2xl";
+            } else {
+                menu.classList.add('hidden');
+                icon.className = "fa-solid fa-bars text-2xl";
+            }
+        }
+
+        // Resource Switcher Tab (YouTube vs Interactive Slides)
+        function toggleResourceMode(mode) {
+            playClickSound();
+            const videoCont = document.getElementById('resource-video-container');
+            const slidesCont = document.getElementById('resource-slides-container');
+            const btnVideo = document.getElementById('btn-toggle-video');
+            const btnSlides = document.getElementById('btn-toggle-slides');
+
+            if (mode === 'video') {
+                videoCont.classList.remove('hidden');
+                slidesCont.classList.add('hidden');
+                btnVideo.className = "px-2.5 py-1.5 rounded-md bg-brand-500 text-white shadow-sm transition-all";
+                btnSlides.className = "px-2.5 py-1.5 rounded-md text-slate-600 hover:text-slate-800 transition-all";
+            } else {
+                videoCont.classList.add('hidden');
+                slidesCont.classList.remove('hidden');
+                btnVideo.className = "px-2.5 py-1.5 rounded-md text-slate-600 hover:text-slate-800 transition-all";
+                btnSlides.className = "px-2.5 py-1.5 rounded-md bg-brand-500 text-white shadow-sm transition-all";
+                updateSlideView();
+            }
+        }
+
+        // Slide Deck Navigation
+        function updateSlideView() {
+            document.querySelectorAll('.slide-page').forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            const currentSlideEl = document.getElementById(`slide-p${gameState.currentSlide + 1}`);
+            if (currentSlideEl) {
+                currentSlideEl.classList.remove('hidden');
+            }
+            
+            document.getElementById('slide-number-display').innerText = `หน้า ${gameState.currentSlide + 1} / ${gameState.totalSlides}`;
+        }
+
+        function nextSlide() {
+            playClickSound();
+            if (gameState.currentSlide < gameState.totalSlides - 1) {
+                gameState.currentSlide++;
+            } else {
+                gameState.currentSlide = 0; // wrap around
+            }
+            updateSlideView();
+        }
+
+        function prevSlide() {
+            playClickSound();
+            if (gameState.currentSlide > 0) {
+                gameState.currentSlide--;
+            } else {
+                gameState.currentSlide = gameState.totalSlides - 1; // wrap around
+            }
+            updateSlideView();
+        }
+
+        // Sandbox Engine (Sentence Builder)
+        function selectSandboxWord(category, word, metadata = '') {
+            playClickSound();
+            if (category === 'subject') {
+                gameState.sandbox.subject = word;
+                gameState.sandbox.subjectType = metadata;
+                
+                // Visual toggle highlight
+                document.querySelectorAll('.btn-sandbox-sub').forEach(btn => {
+                    if (btn.innerText.includes(word)) {
+                        btn.className = "btn-sandbox-sub px-3 py-2 text-xs font-semibold rounded-xl bg-indigo-500 border-2 border-indigo-600 text-white transition-all text-left flex justify-between items-center";
+                    } else {
+                        btn.className = "btn-sandbox-sub px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left flex justify-between items-center";
+                    }
+                });
+            } else if (category === 'verb') {
+                gameState.sandbox.verb = word;
+                
+                // Visual highlight
+                document.querySelectorAll('.btn-sandbox-verb').forEach(btn => {
+                    if (btn.innerText.includes(word.toUpperCase())) {
+                        btn.className = "btn-sandbox-verb py-3 px-4 font-bold text-base rounded-2xl bg-indigo-500 border-2 border-indigo-600 text-white flex justify-between items-center";
+                    } else {
+                        const styleColor = btn.innerText.includes("HAVE") ? "text-emerald-600" : "text-amber-600";
+                        btn.className = `btn-sandbox-verb py-3 px-4 font-bold text-base rounded-2xl bg-white border border-slate-200 ${styleColor} hover:border-brand-500 flex justify-between items-center`;
+                    }
+                });
+            } else if (category === 'object') {
+                gameState.sandbox.object = word;
+
+                // Visual highlight
+                document.querySelectorAll('.btn-sandbox-obj').forEach(btn => {
+                    if (btn.innerText.includes(word.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, "").trim())) {
+                        btn.className = "btn-sandbox-obj px-3 py-2 text-xs font-semibold rounded-xl bg-indigo-500 border-2 border-indigo-600 text-white transition-all text-left";
+                    } else {
+                        btn.className = "btn-sandbox-obj px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left";
+                    }
+                });
+            }
+
+            renderSandboxTerminal();
+        }
+
+        function clearSandbox() {
+            gameState.sandbox.subject = '';
+            gameState.sandbox.subjectType = '';
+            gameState.sandbox.verb = '';
+            gameState.sandbox.object = '';
+
+            document.querySelectorAll('.btn-sandbox-sub').forEach(btn => {
+                btn.className = "btn-sandbox-sub px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left flex justify-between items-center";
+            });
+            document.querySelectorAll('.btn-sandbox-verb').forEach(btn => {
+                const styleColor = btn.innerText.includes("HAVE") ? "text-emerald-600" : "text-amber-600";
+                btn.className = `btn-sandbox-verb py-3 px-4 font-bold text-base rounded-2xl bg-white border border-slate-200 ${styleColor} hover:border-brand-500 flex justify-between items-center`;
+            });
+            document.querySelectorAll('.btn-sandbox-obj').forEach(btn => {
+                btn.className = "btn-sandbox-obj px-3 py-2 text-xs font-semibold rounded-xl bg-white border border-slate-200 hover:border-brand-500 text-slate-700 transition-all text-left";
+            });
+
+            renderSandboxTerminal();
+        }
+
+        function renderSandboxTerminal() {
+            const screenSub = document.getElementById('screen-sub');
+            const screenVerb = document.getElementById('screen-verb');
+            const screenObj = document.getElementById('screen-obj');
+            const copEmoji = document.getElementById('cop-emoji');
+            const copText = document.getElementById('sandbox-cop-text');
+            const btnSpeak = document.getElementById('btn-speak-assembled');
+
+            screenSub.innerText = gameState.sandbox.subject || '___';
+            screenVerb.innerText = gameState.sandbox.verb.toUpperCase() || '_____';
+            screenObj.innerText = gameState.sandbox.object || '___________';
+
+            // Check correctness of assembly
+            const hasSub = gameState.sandbox.subject !== '';
+            const hasVerb = gameState.sandbox.verb !== '';
+            const hasObj = gameState.sandbox.object !== '';
+
+            // Render style updates for visual validation
+            if (hasVerb) {
+                screenVerb.className = gameState.sandbox.verb === 'have' ?
+                    "text-emerald-400 font-sans font-bold text-lg px-3 py-1.5 rounded-xl border border-emerald-500 bg-emerald-950/40 min-w-16 animate-pulse" :
+                    "text-amber-400 font-sans font-bold text-lg px-3 py-1.5 rounded-xl border border-amber-500 bg-amber-950/40 min-w-16 animate-pulse";
+            } else {
+                screenVerb.className = "text-slate-500 font-sans font-bold text-lg px-3 py-1.5 rounded-xl border border-dashed border-slate-700 bg-slate-900/30 min-w-16";
+            }
+
+            if (hasSub && hasVerb && hasObj) {
+                // Enable speech button
+                btnSpeak.disabled = false;
+                btnSpeak.className = "px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all flex items-center space-x-1.5 cursor-pointer shadow-md shadow-indigo-600/15";
+
+                const sub = gameState.sandbox.subject;
+                const verb = gameState.sandbox.verb;
+                const type = gameState.sandbox.subjectType;
+
+                let isCorrect = false;
+                if ((type === 'singular' && verb === 'has') || 
+                    (type === 'plural' && verb === 'have') || 
+                    (type === 'plural_exception' && verb === 'have')) {
+                    isCorrect = true;
+                }
+
+                if (isCorrect) {
+                    copEmoji.innerText = "👮🟢";
+                    copText.innerHTML = `<span class="text-emerald-400 font-bold">ยอดเยี่ยม!</span> โครงสร้างประโยคสมบูรณ์แบบ ประธานกับกริยา Have/Has ใช้ตรงหลักไวยากรณ์แล้วจ้า`;
+                    playSuccessSound();
+                } else {
+                    copEmoji.innerText = "👮🔴";
+                    playFailSound();
+                    if (type === 'singular') {
+                        copText.innerHTML = `<span class="text-rose-400 font-bold">เตือนไวยากรณ์พัง!</span> "${sub}" เป็นเอกพจน์ขี้เหงา (คนเดียว/ตัวเดียว) ต้องสลับไปใช้กริยาที่มีตัวเอสคือ <span class="text-amber-300 font-bold">"HAS"</span> เท่านั้นนะจ๊ะ`;
+                    } else if (type === 'plural_exception') {
+                        copText.innerHTML = `<span class="text-rose-400 font-bold">เตือนไวยากรณ์พัง!</span> ถึงแม้ว่า "I" จะเป็นตัวคนเดียว แต่กฎพิเศษบังคับว่าหัวหน้าใหญ่อย่าง "I" ต้องใช้ <span class="text-emerald-300 font-bold">"HAVE"</span> เสมอนะ!`;
+                    } else {
+                        copText.innerHTML = `<span class="text-rose-400 font-bold">เตือนไวยากรณ์พัง!</span> "${sub}" เป็นประธานพหูพจน์ (หลายคน/ตัว) มีเพื่อนเยอะคึกคัก ห้ามเหงาจึงต้องเปลี่ยนมาใช้ <span class="text-emerald-300 font-bold">"HAVE"</span> จ้า`;
+                    }
+                }
+            } else {
+                btnSpeak.disabled = true;
+                btnSpeak.className = "px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs font-bold rounded-xl transition-all flex items-center space-x-1.5 cursor-not-allowed";
+                copEmoji.innerText = "🚨";
+                
+                let missingStr = [];
+                if (!hasSub) missingStr.push("ประธาน");
+                if (!hasVerb) missingStr.push("กริยา");
+                if (!hasObj) missingStr.push("กรรม");
+                
+                copText.innerText = `ขาดข้อมูล [ ${missingStr.join(" + ")} ] เลือกต่อเพื่อให้ Grammar Cop พิจารณา!`;
+            }
+        }
+
+        function readAssembledSentence() {
+            const sub = gameState.sandbox.subject.replace(/🐒|🐶|🦖|🦄|🔑|🐰|🧚/g, '').trim();
+            const verb = gameState.sandbox.verb;
+            const obj = gameState.sandbox.object.replace(/🐒|🐶|🦖|🦄|🔑|🐰|🧚/g, '').trim();
+            
+            if (sub && verb && obj) {
+                speakSpeech(`${sub} ${verb} ${obj}`);
+            }
+        }
+
+        // Comments System utilizing localstorage persistence
+        function initComments() {
+            const defaultComments = [
+                {
+                    id: 1,
+                    tag: 'tip',
+                    author: 'ครูจอยแสนใจดี (Teacher Joy)',
+                    badge: 'ที่ปรึกษาการสอน',
+                    badgeClass: 'bg-indigo-100 text-indigo-700',
+                    content: 'สวัสดีค่ะสายลับป.4 ทุกคน! ครูจอยมีทริคเล็กๆ มาฝากค่ะ ถ้าประธานชื่อคนคนเดียวเช่น "Alex" ให้ถือว่าเท่ากับ He/She ดังนั้นใช้ "Has" เสมอเลยนะคะ ลองเช็กดูดีๆ ก่อนจะตอบคำถามในภารกิจนะจ๊ะ',
+                    likes: 12,
+                    timestamp: 'เมื่อครู่'
+                },
+                {
+                    id: 2,
+                    tag: 'tip',
+                    author: 'สายลับแม็กซ์ (Detective Max)',
+                    badge: 'แอดมินระบบ',
+                    badgeClass: 'bg-brand-100 text-brand-700',
+                    content: 'ผมเจอเบาะแสสำคัญ! ในประตูล็อกกรงที่ 4 ประธานคือ "We" นะครับ ระวังให้ดีเจ้า "We" แปลว่าพวกเรามีหลายคน ห้ามใช้ Has เด็ดขาดเลยนะครับทุกคน สัตว์เลี้ยงหน้ากรงร้องเสียงหลงแยกหูแล้ว!',
+                    likes: 8,
+                    timestamp: '10 นาทีที่แล้ว'
+                }
+            ];
+
+            const saved = localStorage.getItem('pbl_p4_have_has_comments');
+            if (saved) {
+                gameState.comments = JSON.parse(saved);
+            } else {
+                gameState.comments = defaultComments;
+                saveComments();
+            }
+        }
+
+        function saveComments() {
+            localStorage.setItem('pbl_p4_have_has_comments', JSON.stringify(gameState.comments));
+        }
+
+        function clearAllComments() {
+            if (confirm("คุณแน่ใจหรือไม่ว่าต้องการคืนบอร์ดวิทยุสื่อสารกลับเป็นค่าเริ่มต้น?")) {
+                playClickSound();
+                localStorage.removeItem('pbl_p4_have_has_comments');
+                initComments();
+                renderComments();
+            }
+        }
+
+        function renderComments() {
+            const container = document.getElementById('comments-container');
+            container.innerHTML = '';
+
+            gameState.comments.forEach(comment => {
+                const isSystem = comment.badge === 'แอดมินระบบ' || comment.badge === 'ที่ปรึกษาการสอน';
+                const avatarLetter = comment.author ? comment.author.charAt(0).toUpperCase() : 'S';
+                const tagLabel = comment.tag === 'tip' ? '💡 เคล็ดลับ' : (comment.tag === 'question' ? '❓ คำถาม' : '🎉 ฉลอง');
+                
+                const card = document.createElement('div');
+                card.className = isSystem ? 
+                    "bg-slate-50/80 p-5 rounded-2xl border border-slate-100 flex items-start space-x-4 hover:bg-slate-50 transition-all bouncy-hover" : 
+                    "bg-white p-5 rounded-2xl border border-slate-200/60 flex items-start space-x-4 shadow-sm hover:border-brand-300 transition-all bouncy-hover";
+
+                card.innerHTML = `
+                    <div class="w-10 h-10 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center text-sm shadow-md flex-shrink-0">${avatarLetter}</div>
+                    <div class="space-y-1.5 flex-grow">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-bold text-slate-800">
+                                ${comment.author} 
+                                <span class="${comment.badgeClass || 'bg-slate-100 text-slate-700'} text-[10px] px-2 py-0.5 rounded-full ml-1.5 font-normal">${comment.badge}</span>
+                                <span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full ml-1 font-normal">${tagLabel}</span>
+                            </span>
+                            <span class="text-xs text-slate-400">${comment.timestamp}</span>
+                        </div>
+                        <p class="text-sm text-slate-600 leading-relaxed">${comment.content}</p>
+                        <div class="flex items-center space-x-4 text-xs text-slate-500 pt-2">
+                            <button class="hover:text-brand-600 flex items-center space-x-1" onclick="likeComment(${comment.id})">
+                                <i class="fa-regular fa-thumbs-up"></i> <span>เห็นด้วย (${comment.likes})</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openNewTopicModal() {
+            playClickSound();
+            document.getElementById('new-topic-modal').classList.remove('hidden');
+        }
+
+        function closeNewTopicModal() {
+            playClickSound();
+            document.getElementById('new-topic-modal').classList.add('hidden');
+        }
+
+        function submitNewTopic(event) {
+            event.preventDefault();
+            playClickSound();
+
+            const username = document.getElementById('topic-username').value;
+            const content = document.getElementById('topic-content').value;
+            const tag = document.getElementById('topic-tag').value;
+
+            // Simple HTML sanitizer to avoid issues
+            const cleanUser = username.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const cleanContent = content.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+            const newComment = {
+                id: Date.now(),
+                tag: tag,
+                author: cleanUser,
+                badge: 'สายลับป.4',
+                badgeClass: 'bg-emerald-50 text-emerald-700',
+                content: cleanContent,
+                likes: 0,
+                timestamp: 'เมื่อสักครู่'
+            };
+
+            gameState.comments.unshift(newComment);
+            saveComments();
+            renderComments();
+
+            // Clear inputs & close modal
+            document.getElementById('topic-username').value = '';
+            document.getElementById('topic-content').value = '';
+            closeNewTopicModal();
+
+            // AI/Instructor Automated Bot Response Simulation
+            setTimeout(() => {
+                const bots = [
+                    "ยอดเยี่ยมมากเลยครับสายลับ! ทีมงานได้รับสาสน์แล้ว",
+                    "ทริคที่แบ่งปันมีคุณค่าต่อส่วนกลางมากเลยนะจ๊ะ!",
+                    "รับรองว่าเบาะแสนี้จะช่วยไขกรงกลของวายร้ายได้ง่ายขึ้นแน่นอนครับ"
+                ];
+                const botReply = bots[Math.floor(Math.random() * bots.length)];
+                
+                const systemReply = {
+                    id: Date.now() + 1,
+                    tag: 'tip',
+                    author: 'สารวัตรแม็กซ์ บอทผู้ช่วย (Max Assistant Bot)',
+                    badge: 'แอดมินระบบ',
+                    badgeClass: 'bg-indigo-100 text-indigo-700',
+                    content: `@${cleanUser} ${botReply}`,
+                    likes: 2,
+                    timestamp: 'เมื่อครู่'
+                };
+
+                gameState.comments.unshift(systemReply);
+                saveComments();
+                renderComments();
+                playSuccessSound();
+            }, 1800);
+        }
+
+        function likeComment(id) {
+            playClickSound();
+            const idx = gameState.comments.findIndex(c => c.id === id);
+            if (idx !== -1) {
+                gameState.comments[idx].likes++;
+                saveComments();
+                renderComments();
+            }
+        }
+
+        // Gamified Mission solver logic
+        function solveCage(cageId, selection) {
+            const correctAnswer = gameState.cageAnswers[cageId];
+            const cageCard = document.getElementById(`cage-card-${cageId}`);
+            const cageStatus = document.getElementById(`cage-status-${cageId}`);
+            const cageIcon = document.getElementById(`cage-icon-${cageId}`);
+            const cageBars = document.getElementById(`cage-bars-${cageId}`);
+            const buttons = document.querySelectorAll(`.solve-btn-${cageId}`);
+
+            if (selection === correctAnswer) {
+                // Rescue Success
+                gameState.rescuedPets[cageId] = true;
+                playSuccessSound();
+
+                // Update UI state to Success with animations
+                cageStatus.className = "px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider bg-emerald-50 text-emerald-600 uppercase border border-emerald-100";
+                cageStatus.innerHTML = "<i class='fa-solid fa-unlock mr-1'></i> หลุดพ้น!";
+                
+                cageCard.classList.add('unlocked-pulse');
+                cageCard.className = "bg-emerald-50/70 rounded-3xl p-6 shadow-md border-2 border-emerald-400 transition-all flex flex-col justify-between";
+                
+                // Lift cage bars
+                if (cageBars) {
+                    cageBars.className = "absolute inset-x-2 inset-y-0 flex justify-between z-10 pointer-events-none cage-bars-open";
+                }
+                
+                // Animate pet animal bounce out happily
+                cageIcon.className = "z-0 select-none animate-bounce";
+
+                // Disable both choice buttons of the unlocked cage
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.className = "py-2.5 bg-slate-100 text-slate-400 rounded-xl text-xs font-semibold cursor-not-allowed";
+                    if (btn.innerText.toLowerCase().includes(correctAnswer)) {
+                        btn.className = "py-2.5 bg-emerald-500 text-white rounded-xl text-xs font-bold cursor-not-allowed";
+                    }
+                });
+
+                showMissionFeedback("โค้ดสลักสัญญาณถูกต้อง! ประตูกลเปิดออกแล้ว น้องสัตว์ปลอดภัย!", "emerald");
+                
+                // Cute spoken feedback
+                const petNames = ["It has long ears.", "They have big paws.", "She has wings.", "We have a shiny horn.", "I have green skin."];
+                speakSpeech("Correct sentence! " + petNames[cageId - 1]);
+
+            } else {
+                // Rescue Fail with CSS feedback shake & buzzer noise
+                playFailSound();
+                cageCard.classList.add('animate-shake');
+                setTimeout(() => cageCard.classList.remove('animate-shake'), 500);
+
+                showMissionFeedback("สัญญาณเตือนดังแหลมขึ้น! รหัสไม่ถูกต้องตามประธานประโยค ทบทวนกฎแล้วลองพิจารณาใหม่อีกทีนะ", "coral");
+            }
+
+            updateRescueProgress();
+        }
+
+        function showMissionFeedback(text, colorType) {
+            const alertBox = document.getElementById('mission-alert');
+            alertBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-700', 'bg-rose-50', 'text-rose-700', 'border-emerald-200', 'border-rose-200');
+            
+            if (colorType === 'emerald') {
+                alertBox.className = "p-4 rounded-2xl text-center font-bold text-sm bg-emerald-50 text-emerald-700 border border-emerald-200 animate-pulse mt-6";
+            } else {
+                alertBox.className = "p-4 rounded-2xl text-center font-bold text-sm bg-rose-50 text-rose-700 border border-rose-200 mt-6";
+            }
+            alertBox.innerText = text;
+        }
+
+        function updateRescueProgress() {
+            let totalRescued = 0;
+            for (let cage in gameState.rescuedPets) {
+                if (gameState.rescuedPets[cage] === true) {
+                    totalRescued++;
+                }
+            }
+
+            document.getElementById('rescue-count').innerText = `${totalRescued} / 5 ตัว`;
+            const progressPercentage = (totalRescued / 5) * 100;
+            document.getElementById('rescue-progress').style.width = `${progressPercentage}%`;
+
+            if (totalRescued === 5) {
+                showMissionFeedback("🎉 สุดยอดสถิติสูงสุดกระพริบตา!!! ยอดนักสืบพิทักษ์และปลดปล่อยเพื่อนกระซิบได้หมดเกาะอย่างสมบูรณ์แบบ!", "emerald");
+                speakSpeech("Congratulations! All magic pets are rescued!");
+            }
+        }
+
+        function resetGame() {
+            for (let cage in gameState.rescuedPets) {
+                gameState.rescuedPets[cage] = false;
+            }
+
+            // Restore Card Styles
+            for (let i = 1; i <= 5; i++) {
+                const cageCard = document.getElementById(`cage-card-${i}`);
+                const cageStatus = document.getElementById(`cage-status-${i}`);
+                const cageIcon = document.getElementById(`cage-icon-${i}`);
+                const cageBars = document.getElementById(`cage-bars-${i}`);
+                
+                cageCard.className = "bg-white rounded-3xl p-6 shadow-md border-2 border-slate-100 hover:border-slate-300 transition-all flex flex-col justify-between overflow-hidden relative";
+                
+                cageStatus.className = "px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider bg-rose-50 text-rose-600 uppercase border border-rose-100";
+                cageStatus.innerHTML = "<i class='fa-solid fa-lock mr-1'></i> ถูกขังอยู่";
+                
+                if (cageBars) {
+                    cageBars.className = "absolute inset-x-2 inset-y-0 flex justify-between z-10 pointer-events-none transition-all duration-1000";
+                }
+                
+                if (cageIcon) {
+                    cageIcon.className = "z-0 select-none";
+                }
+
+                // Restore cage buttons
+                const buttons = document.querySelectorAll(`.solve-btn-${i}`);
+                buttons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.className = "py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 transition-colors";
+                });
+            }
+
+            updateRescueProgress();
+            
+            const alertBox = document.getElementById('mission-alert');
+            alertBox.classList.add('hidden');
+        }
+
+        // Dynamic Certificate & Assessment Form Engine
+        function generateCertificate(event) {
+            event.preventDefault();
+            playClickSound();
+
+            const studentName = document.getElementById('cert-student-name').value;
+            const writtenReflection = document.getElementById('reflection-text').value;
+
+            // Calculate total score based on game state
+            let totalRescued = 0;
+            for (let cage in gameState.rescuedPets) {
+                if (gameState.rescuedPets[cage] === true) {
+                    totalRescued++;
+                }
+            }
+
+            // Check if they solved at least one cage to avoid empty certs
+            if (totalRescued === 0) {
+                alert("สายลับน้อยต้องการช่วยเหลือประมวลผลกรงสัตว์วิเศษอย่างน้อย 1 ตัวในแท็บที่ 4 เพื่อขอจบหลักสูตรรับใบประกาศความดีความชอบนะจ๊ะ!");
+                switchTab('mission');
+                return;
+            }
+
+            // Dynamic Text Bindings
+            document.getElementById('cert-display-name').innerText = studentName;
+            document.getElementById('cert-score-display').innerText = `${totalRescued}/5 ตัวถูกปลดปล่อยสู่อิสรภาพ`;
+
+            // Star score generator logic
+            const starContainer = document.getElementById('cert-stars-display');
+            starContainer.innerHTML = '';
+            const starsToGive = totalRescued;
+            for (let k = 0; k < 5; k++) {
+                const star = document.createElement('i');
+                if (k < starsToGive) {
+                    star.className = "fa-solid fa-star text-amber-500 mr-0.5";
+                } else {
+                    star.className = "fa-regular fa-star text-slate-300 mr-0.5";
+                }
+                starContainer.appendChild(star);
+            }
+
+            // Set current date in Thai format
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date().toLocaleDateString('th-TH', options);
+            document.getElementById('cert-date-display').innerText = today;
+
+            // Hide form and unwrap Certificate Card
+            document.getElementById('assessment-form').classList.add('hidden');
+            document.getElementById('certificate-unlocked-section').classList.remove('hidden');
+            
+            // Play celebratory sound
+            setTimeout(() => {
+                playSuccessSound();
+                speakSpeech("Outstanding job! Here is your official detective certificate.");
+            }, 500);
+        }
+    </script>
+</body>
+</html>
